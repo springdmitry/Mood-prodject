@@ -10,6 +10,12 @@ import {
     signInWithPopup,
     updateProfile
 } from "firebase/auth";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "firebase/firestore";
 
 /* === Firebase Setup === */
 const firebaseConfig = {
@@ -22,6 +28,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const db = getFirestore(app)
 
 /* === UI === */
 
@@ -43,9 +50,9 @@ const signOutButtonEl = document.getElementById("sign-out-btn")
 const userProfilePictureEl = document.getElementById("user-profile-picture")
 const userGreetingEl = document.getElementById("user-greeting")
 
-const displayNameInputEl = document.getElementById("display-name-input")
-const photoURLInputEl = document.getElementById("photo-url-input")
-const updateProfileButtonEl = document.getElementById("update-profile-btn")
+const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
+const textareaEl = document.getElementById("post-input")
+const postButtonEl = document.getElementById("post-btn")
 
 /* == UI - Event Listeners == */
 
@@ -56,24 +63,27 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
 
-// updateProfileButtonEl.addEventListener("click", authUpdateProfile)
+for (let moodEmojiEl of moodEmojiEls) {
+    moodEmojiEl.addEventListener("click", selectMood)
+}
+
+postButtonEl.addEventListener("click", postButtonPressed)
+
+/* === State === */
+
+let moodState = 0
 
 /* === Main Code === */
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        
         showLoggedInView()
         showProfilePicture(userProfilePictureEl, user)
-        showUserGreeting(userGreetingEl, user)
-
+        showUserGreeting(userGreetingEl, user) 
     } else {
-        // User is signed out
-        showLoggedOutView()
+        showLoggedOutView() 
     }
-});
+})
 
 /* === Functions === */
 
@@ -81,44 +91,24 @@ onAuthStateChanged(auth, (user) => {
 
 function authSignInWithGoogle() {
     signInWithPopup(auth, provider)
-    .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        console.log("Signed in with Google")
-        // console.log(credential)
-        // console.log(user)
-    }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        console.error(errorMessage)
-    });
+        .then((result) => {
+            console.log("Signed in with Google")
+        }).catch((error) => {
+            console.error(error.message)
+        })
 }
 
 function authSignInWithEmail() {
     const email = emailInputEl.value
     const password = passwordInputEl.value
-
+    
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
             clearAuthFields()
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error(errorMessage)
-        });
-
+            console.error(error.message)
+        })
 }
 
 function authCreateAccountWithEmail() {
@@ -127,46 +117,50 @@ function authCreateAccountWithEmail() {
 
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed up 
-            const user = userCredential.user;
             clearAuthFields()
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error(error.message)
-
-            // ..
-        });
-    
+            console.error(error.message) 
+        })
 }
 
 function authSignOut() {
-    signOut(auth).then(() => {
-        // Sign-out successful.
-        console.log("user sign-out successful")
-    }).catch((error) => {
-        // An error happened.
-        console.error(error.message)
-    });
+    signOut(auth)
+        .then(() => {
+        }).catch((error) => {
+            console.error(error.message)
+        })
 }
 
-// function authUpdateProfile() {
-//     const newDisplayName = displayNameInputEl.value
-//     const newPhotoUrl = photoURLInputEl.value
+/* = Functions - Firebase - Cloud Firestore = */
 
-//     updateProfile(auth.currentUser, {
-//         displayName: newDisplayName,
-//         photoURL: newPhotoUrl
-//     }).then(() => {
-//         console.log('Profile updated!')
-//     }).catch((error) => {
-//         // An error occurred
-//         console.error(error.message)
-//     });
-// }
+async function addPostToDB(postBody, user) {
+    try {
+        const docRef = await addDoc(collection(db, "posts"), {
+            body: postBody,
+            uid: user.uid,
+            createdAt: serverTimestamp(),
+            mood: moodState
+        })
+        console.log("Document written with ID: ", docRef.id)
+    } catch (error) {
+        console.error(error.message)
+    }
+
+}
 
 /* == Functions - UI Functions == */
+
+function postButtonPressed() {
+    const postBody = textareaEl.value
+    const user = auth.currentUser
+    
+    if (postBody && moodState) {
+        addPostToDB(postBody, user)
+        clearInputField(textareaEl)
+        resetAllMoodElements(moodEmojiEls)
+    }
+}
 
 function showLoggedOutView() {
     hideView(viewLoggedIn)
@@ -179,7 +173,7 @@ function showLoggedInView() {
 }
 
 function showView(view) {
-    view.style.display = "flex"
+    view.style.display = "flex" 
 }
 
 function hideView(view) {
@@ -187,32 +181,69 @@ function hideView(view) {
 }
 
 function clearInputField(field) {
-    field.value = ''
+	field.value = ""
 }
 
 function clearAuthFields() {
-    clearInputField(emailInputEl)
-    clearInputField(passwordInputEl)
+	clearInputField(emailInputEl)
+	clearInputField(passwordInputEl)
 }
 
-async function showProfilePicture(imgElement, user) {
-    const photoURL = await user.photoURL;
+function showProfilePicture(imgElement, user) {
+    const photoURL = user.photoURL
+    
     if (photoURL) {
-        imgElement.src = user.photoURL
-        imgElement.alt = "Profile pictue"
+        imgElement.src = photoURL
     } else {
-        imgElement.src = "assets/images/default-profile-picture2.png"
-        imgElement.alt = "default user icon by Bombasticon Studio"
+        imgElement.src = "assets/images/default-profile-picture.jpeg"
     }
 }
 
 function showUserGreeting(element, user) {
-    const displayName = user.displayName;
-
+    const displayName = user.displayName
+    
     if (displayName) {
-        const userFirstName = displayName.split(' ')[0]
-        userGreetingEl.textContent = `Hey ${userFirstName}, how are you?`
+        const userFirstName = displayName.split(" ")[0]
+        
+        element.textContent = `Hey ${userFirstName}, how are you?`
     } else {
-        userGreetingEl.textContent = "Hey friend, how are you?"
+        element.textContent = `Hey friend, how are you?`
     }
+}
+
+/* = Functions - UI Functions - Mood = */
+
+function selectMood(event) {
+    const selectedMoodEmojiElementId = event.currentTarget.id
+    
+    changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
+    
+    const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
+    
+    moodState = chosenMoodValue
+}
+
+function changeMoodsStyleAfterSelection(selectedMoodElementId, allMoodElements) {
+    for (let moodEmojiEl of moodEmojiEls) {
+        if (selectedMoodElementId === moodEmojiEl.id) {
+            moodEmojiEl.classList.remove("unselected-emoji")          
+            moodEmojiEl.classList.add("selected-emoji")
+        } else {
+            moodEmojiEl.classList.remove("selected-emoji")
+            moodEmojiEl.classList.add("unselected-emoji")
+        }
+    }
+}
+
+function resetAllMoodElements(allMoodElements) {
+    for (let moodEmojiEl of allMoodElements) {
+        moodEmojiEl.classList.remove("selected-emoji")
+        moodEmojiEl.classList.remove("unselected-emoji")
+    }
+    
+    moodState = 0
+}
+
+function returnMoodValueFromElementId(elementId) {
+    return Number(elementId.slice(5))
 }
