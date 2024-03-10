@@ -8,6 +8,7 @@
     --light-color: #FFFEFC;
     --grey-color: #747E79;
     --dark-color: #000000;
+    --white-color: #FFFEFC;
 
     --primary-font: 'Cabin', sans-serif;
     --seconday-font: 'Calistoga', sans-serif;
@@ -38,11 +39,11 @@ body {
 
 /* === Typography === */
 
-h1, h2 {
+h1, h2, h3, p {
     margin: 0;
 }
 
-h2 {
+h2, h3 {
     font-weight: 500;
 }
 
@@ -127,13 +128,112 @@ section {
     opacity: 0.5;
 }
 
+/* === Posts Section === */
+
+.posts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+	margin-bottom: 1.8em;
+}
+
+/* == Posts Section - Filters == */
+
+.filters-and-posts-section {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.filters-section {
+    display: flex;
+    gap: 0.4em;
+}
+
+.filter-btn {
+    color: var(--dark-color);
+    font-size: 0.9em;
+    padding: 0.3em;
+    background-color: transparent;
+}
+
+.selected-filter {
+    color: var(--white-color);
+    background-color: var(--dark-color);
+}
+
+/* == Posts Section - Posts == */
+
+.post {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-color);
+    padding: 0.8em;
+    border-radius: var(--element-border-radius);
+    gap: 0.4em;
+}
+
+/* = Posts Section - Posts - Header = */
+
+.post .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post .header h3 {
+    font-size: 1em;
+}
+
+.post .header img {
+    width: 2em;
+    height: 2em;
+}
+
+/* = Posts Section - Posts - Body = */
+
+.post p {
+    font-size: 0.9em;
+    line-height: 1.3em;
+    white-space: pre-wrap;
+}
+
+/* = Posts Section - Posts - Footer = */
+
+.post .footer {
+    display: flex;
+    align-self: flex-start;
+    gap: 0.4em;
+}
+
+.post .footer button {
+    font-size: 0.9em;
+    padding: 0.2em 0.8em;
+    box-shadow: 0px var(--small-button-height) 0px 0px var(--dark-color);
+    position: relative;
+}
+
+.post .footer button:hover {
+    top: var(--small-button-height);
+    box-shadow: none;
+}
+
+.post .footer .edit-color {
+    background-color: var(--post-color);
+}
+
+.post .footer .delete-color {
+    background-color: var(--delete-color);
+}
+
 /* === Nav === */
 
 nav {
     margin: 0.6em 0;
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 /* === Structure === */
@@ -153,7 +253,7 @@ nav {
 .app-container {
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 1em;
 }
 
 /* === Common for elements === */
@@ -289,4 +389,15 @@ button:hover {
 #logged-in-view {
     display: none;
     margin: 0;
+}
+
+#account-settings-view {
+    display: none;
+    margin: 0;
+}
+
+/* Account settings */
+
+#account-settings-view .container h3 {
+    margin: 0 auto 1em;
 }

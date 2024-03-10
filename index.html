@@ -31,10 +31,24 @@
                 </div>
             </div>
         </section>
+
+        <section id="account-settings-view">
+            <div class="container">
+                <h3>Change your name and photo</h3>
+                <div class="auth-fields-and-buttons">
+                    <input id="new-name-input" type="text" placeholder="Name">
+                    <input id="new-photoUrl-input" type="url" placeholder="Photo url (https:// ....)">
+                    <button id="save-changes-btn" class="secondary-btn">Save changes</button>
+                </div>
+            </div>
+        </section>
         
         <section id="logged-in-view">
             <div class="container">
                 <nav>
+                    <button id="settings-btn" class="icon-btn">
+                        <img src="assets/icons/icon-gear.svg" class="icon-img-btn">
+                    </button>
                     <button id="sign-out-btn" class="icon-btn">
                         <img src="assets/icons/icon-sign-out.svg" class="icon-img-btn">
                     </button>
@@ -72,6 +86,16 @@
                     <div class="post-section">
                         <textarea id="post-input" placeholder="Write down how you're feeling..."></textarea>
                         <button id="post-btn" class="primary-btn">Post</button>
+                    </div>
+                    <div class="filters-and-posts-section">
+                        <div class="filters-section">
+                            <button id="today-filter-btn" class="filter-btn">Today</button>
+                            <button id="week-filter-btn" class="filter-btn">Week</button>
+                            <button id="month-filter-btn" class="filter-btn">Month</button>
+                            <button id="all-filter-btn" class="filter-btn">All</button>
+                        </div>
+                    
+                        <div id="posts" class="posts-section"></div>
                     </div>
                 </div>
             </div>
