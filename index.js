@@ -307,20 +307,21 @@ function createPostHeader(postData) {
     */
     const headerDiv = document.createElement("div")
     headerDiv.className = "header"
+
+    /* 
+        <h3>21 Sep 2023 - 14:35</h3>
+    */
+    const headerDate = document.createElement("h3")
+    headerDate.textContent = displayDate(postData.createdAt)
+    headerDiv.appendChild(headerDate)
+
+    /* 
+        <img src="assets/emojis/5.png">
+    */
+    const moodImage = document.createElement("img")
+    moodImage.src = new URL(`/assets/emojis/${postData.mood}.png`, import.meta.url).href
     
-        /* 
-            <h3>21 Sep 2023 - 14:35</h3>
-        */
-        const headerDate = document.createElement("h3")
-        headerDate.textContent = displayDate(postData.createdAt)
-        headerDiv.appendChild(headerDate)
-        
-        /* 
-            <img src="assets/emojis/5.png">
-        */
-        const moodImage = document.createElement("img")
-        moodImage.src = new URL(`/assets/emojis/${postData.mood}.png`, import.meta.url)
-        headerDiv.appendChild(moodImage)
+    headerDiv.appendChild(moodImage)
         
     return headerDiv
 }
