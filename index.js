@@ -168,8 +168,6 @@ function authUpdateProfile() {
             displayName: name
         }).then(() => {
             clearInputField(nameInputEl)
-            showView(viewLoggedIn)
-            hideView(viewAccountSettings)
         }).catch((error) => {
             console.error(error.message)
         });
@@ -179,12 +177,12 @@ function authUpdateProfile() {
             photoURL: photoUrl
         }).then(() => {
             clearInputField(photoInputEl)
-            showView(viewLoggedIn)
-            hideView(viewAccountSettings)
         }).catch((error) => {
             console.error(error.message)
         });
     }
+    showView(viewLoggedIn)
+    hideView(viewAccountSettings)
 }
 
 function authSignOut() {
