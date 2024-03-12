@@ -401,3 +401,11 @@ button:hover {
 #account-settings-view .container h3 {
     margin: 0 auto 1em;
 }
+
+/* Auth error mesages */
+
+#error-messages {
+    margin: -0.5rem 0;
+    color: red;
+    text-align: center;
+}

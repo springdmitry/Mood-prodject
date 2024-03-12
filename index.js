@@ -45,6 +45,8 @@ const viewLoggedOut = document.getElementById("logged-out-view")
 const viewLoggedIn = document.getElementById("logged-in-view")
 const viewAccountSettings = document.getElementById("account-settings-view")
 
+const errorMessageEl = document.getElementById("error-messages")
+
 const signInWithGoogleButtonEl = document.getElementById("sign-in-with-google-btn")
 
 const emailInputEl = document.getElementById("email-input")
@@ -122,10 +124,11 @@ onAuthStateChanged(auth, (user) => {
 function authSignInWithGoogle() {
     signInWithPopup(auth, provider)
         .then((result) => {
-            console.log("Signed in with Google")
+            errorMessageEl.textContent = "Please, sign in or create account"
         }).catch((error) => {
             console.error(error.message)
-        })
+            errorMessageEl.textContent = error.message
+    })
 }
 
 function authSignInWithEmail() {
@@ -135,9 +138,11 @@ function authSignInWithEmail() {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             clearAuthFields()
+            errorMessageEl.textContent = "Please, sign in or create account"
         })
         .catch((error) => {
             console.error(error.message)
+            errorMessageEl.textContent = error.message
         })
 }
 
@@ -158,17 +163,28 @@ function authUpdateProfile() {
     console.log("Update profile")
     const name = nameInputEl.value
     const photoUrl = photoInputEl.value
-
-    updateProfile(auth.currentUser, {
-        displayName: name, photoURL: photoUrl
-    }).then(() => {
-        clearInputField(nameInputEl)
-        clearInputField(photoInputEl)
-        showView(viewLoggedIn)
-        hideView(viewAccountSettings)
-    }).catch((error) => {
-        console.error(error.message)
-    });
+    if (name) {
+        updateProfile(auth.currentUser, {
+            displayName: name
+        }).then(() => {
+            clearInputField(nameInputEl)
+            showView(viewLoggedIn)
+            hideView(viewAccountSettings)
+        }).catch((error) => {
+            console.error(error.message)
+        });
+    }
+    if (photoUrl) {
+        updateProfile(auth.currentUser, {
+            photoURL: photoUrl
+        }).then(() => {
+            clearInputField(photoInputEl)
+            showView(viewLoggedIn)
+            hideView(viewAccountSettings)
+        }).catch((error) => {
+            console.error(error.message)
+        });
+    }
 }
 
 function authSignOut() {
