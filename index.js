@@ -453,10 +453,9 @@ function showProfilePicture(imgElement, user) {
     if (photoURL) {
         imgElement.src = photoURL
     } else {
-        imgElement.src = "assets/images/default-profile-picture.jpeg"
+        imgElement.src = new URL("assets/images/default-profile-picture.jpeg", import.meta.url).href
     }
 }
-
 function showUserGreeting(element, user) {
     const displayName = user.displayName
     
