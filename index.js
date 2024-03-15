@@ -51,6 +51,7 @@ const signInWithGoogleButtonEl = document.getElementById("sign-in-with-google-bt
 
 const emailInputEl = document.getElementById("email-input")
 const passwordInputEl = document.getElementById("password-input")
+const passwordErrorEl = document.getElementById('password-error')
 
 const signInButtonEl = document.getElementById("sign-in-btn")
 const createAccountButtonEl = document.getElementById("create-account-btn")
@@ -94,6 +95,16 @@ for (let filterButtonEl of filterButtonEls) {
 }
 
 postButtonEl.addEventListener("click", postButtonPressed)
+
+passwordInputEl.addEventListener('input', function () {
+    if (passwordInputEl.validity.tooShort) {
+        passwordInputEl.setCustomValidity('Password must be at least 6 characters long.');
+        passwordErrorEl.textContent = 'Password must be at least 6 characters long.'
+    } else {
+        passwordInputEl.setCustomValidity('');
+        passwordErrorEl.textContent = ''
+    }
+})
 
 /* === State === */
 
@@ -153,9 +164,11 @@ function authCreateAccountWithEmail() {
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             clearAuthFields()
+            errorMessageEl.textContent = "Please, sign in or create account"
         })
         .catch((error) => {
-            console.error(error.message) 
+            console.error(error)
+            errorMessageEl.textContent = error.message
         })
 }
 
