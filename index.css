@@ -404,14 +404,8 @@ button:hover {
 
 /* Auth error mesages */
 
-#error-messages {
+#error-messages, #password-error {
     margin: -0.5rem 0;
     color: red;
     text-align: center;
-}
-
-#password-error {
-    color: red;
-    text-align: center;
-    margin: -0.5rem 0;
 }
